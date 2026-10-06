@@ -1,0 +1,44 @@
+{
+  "name": "dsh-lecture-copilot-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture Copilot: live English lecture capture with real-time Chinese translation and an automatic logic-chain / knowledge-point review",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/state.js",
+    "lib/notes.js",
+    "lib/tools.js",
+    "lib/prompts.js",
+    "lib/onenote.js",
+    "lib/note-xml.js",
+    "lib/onenote-store.js",
+    "host/onenote.ps1",
+    "cordis.patch.yml",
+    "README.md",
+    "Installation_zh-CN.md",
+    "Installation_en.md",
+    "Installation_jp.md"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  }
+}

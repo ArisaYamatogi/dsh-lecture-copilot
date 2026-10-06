@@ -1,0 +1,18 @@
+# The dsh-lecture-copilot bundle patch: one insert layer over the profile root.
+#
+#   lecture-copilot   the whole plugin — Host half (transcription, translation,
+#                     review notes, the two model-facing tools, the HTTP routes
+#                     the browser half talks to) and browser half (the floating
+#                     microphone control and the live bilingual panel),
+#                     resolved from this package's ./client export.
+#
+# `name` must be the npm package name declared in this package's package.json:
+# the loader resolves it from the profile directory through the link the
+# install created, and a mismatch fails the row with "failed to import".
+#
+# Row order carries no load semantics (activation is service-availability
+# driven). Disable the row by id from the profile's own cordis.patch.yml.
+
+- insert:
+    - id: lecture-copilot
+      name: 'dsh-lecture-copilot-plugin'

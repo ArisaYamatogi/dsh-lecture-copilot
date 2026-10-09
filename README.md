@@ -6,7 +6,7 @@
 → 再次按下结束录音 → 自动整理出**逻辑链 + 知识点**的复习笔记
 → 还可**自动导出至OneNote**（仅限Windows）
 
-特化场景：全英文授课的**高等数学 (Advanced Mathematics) / 线性代数 / 概率统计**以及**计算机科学与技术(Computer Science)**类课程
+特化场景：全英文授课的**高等数学 (Advanced Mathematics) / 线性代数 / 概率统计**以及**计算机科学与技术Computer Science**类课程
 
 ---
 

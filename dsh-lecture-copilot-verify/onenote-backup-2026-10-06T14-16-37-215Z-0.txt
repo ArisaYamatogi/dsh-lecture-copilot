@@ -1,0 +1,42 @@
+# JNU / Adv. Maths 1 / 课堂笔记 2026-10-06 22:09
+# page id: {85B19EC1-47BB-5735-268E-403885E4732E}{1}{E19498741868878175325920136972531477572133551}
+# captured: 2026-10-06T14:16:37.215Z
+# matched: generated page name
+
+<span
+style='font-family:"Microsoft YaHei"'>【一、课堂主线（</span><span style='font-family:
+Calibri'>3-6 </span><span style='font-family:"Microsoft YaHei"'>条）】</span>
+<span
+style='font-family:"Microsoft YaHei"'>本段录音中教师仅进行设备试音（</span><span
+style='font-family:Calibri'>&quot;Testing, testing.&quot;</span><span
+style='font-family:"Microsoft YaHei"'>），未进入任何教学环节，因此无法归纳出课堂主线、推进顺序或知识脉络。</span>
+【二、逻辑链】
+本段转写中没有出现任何定义、构造、推导或算法步骤，无法建立逻辑链。
+【三、知识点】
+本段转写中没有出现任何专业术语或知识点内容。
+<span
+style='font-family:"Microsoft YaHei"'>（说明：录音总长约</span><span style='font-family:
+Calibri'> 1 </span><span style='font-family:"Microsoft YaHei"'>分钟，全部内容为试音语句，未包含可整理的教学信息。）</span>
+【四、公式与代码速查】
+本段转写中没有出现公式、定理条件或算法伪代码。
+【五、术语对照表】
+<span
+style='font-family:"Microsoft YaHei"'>英文</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>中文</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>说明</span>
+<span
+style='font-family:"Microsoft YaHei"'>（无）</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>（无）</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>本段转写未出现专业术语</span>
+【六、待确认与作业线索】
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>转写缺失：本次仅提供</span><span
+style='font-family:Calibri'> 1 </span><span style='font-family:"Microsoft YaHei"'>段约</span><span
+style='font-family:Calibri'> 1 </span><span style='font-family:"Microsoft YaHei"'>分钟的转写，内容为</span><span
+style='font-family:Calibri'> &quot;Testing, testing.&quot;</span><span
+style='font-family:"Microsoft YaHei"'>，判断为录音开始前的麦克风测试，正文内容未录入或被截断（转写存疑）。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>待确认：本课程名称、章节主题、教师姓名均无法从转写中判断。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>作业</span><span
+style='font-family:Calibri'>/</span><span style='font-family:"Microsoft YaHei"'>考点线索：无。建议核对录音源文件是否完整，重新获取正式授课部分的转写后再整理笔记。</span>

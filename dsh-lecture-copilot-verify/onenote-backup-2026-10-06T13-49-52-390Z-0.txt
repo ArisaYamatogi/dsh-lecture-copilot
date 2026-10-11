@@ -1,0 +1,106 @@
+# JNU / Temp / Academic Department: https://jwc.jnu.edu.cn
+# page id: {F0291242-CFA1-92BC-09EF-653DBBF1CA58}{1}{E201784904870952767598620149251017840746120291}
+# captured: 2026-10-06T13:49:52.391Z
+# matched: 课堂同传
+
+
+
+
+
+
+
+
+
+
+
+Academic Department: <a
+href="https://jwc.jnu.edu.cn">https://jwc.jnu.edu.cn</a>
+International School: <a
+href="http://ischool.jnu.edu.cn">http://ischool.jnu.edu.cn</a>
+
+---
+Courese selection
+
+<span
+style='font-family:Calibri'>—— </span><span style='font-family:"Microsoft YaHei"'>课堂同传 </span><span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>课堂笔记</span><span
+style='font-family:Calibri'> 2026-10-06 21:46 ——</span>
+<span
+style='font-family:"Microsoft YaHei"'>【一、课堂主线（</span><span style='font-family:
+Calibri'>3-6 </span><span style='font-family:"Microsoft YaHei"'>条）】</span>
+<span
+style='font-family:Calibri'>1. </span><span style='font-family:"Microsoft YaHei"'>本次转写仅含一句加法等式陈述（</span><span
+style='font-family:Calibri'>$5+5=10$</span><span style='font-family:"Microsoft YaHei"'>），未呈现任何可辨认的课程推进过程。</span>
+<span
+style='font-family:Calibri'>2. </span><span style='font-family:"Microsoft YaHei"'>教师先给出一个算术等式的结论，然后未作任何定义引入、推导或例题展开，最后没有出现后续内容。</span>
+<span
+style='font-family:Calibri'>3. </span><span style='font-family:"Microsoft YaHei"'>从转写时长（约</span><span
+style='font-family:Calibri'> 1 </span><span style='font-family:"Microsoft YaHei"'>分钟）与分段数量（</span><span
+style='font-family:Calibri'>1 </span><span style='font-family:"Microsoft YaHei"'>段）看，材料极可能是课堂录音的片段或转写残缺，而非一次完整授课。</span>
+<span
+style='font-family:Calibri'>4. </span><span style='font-family:"Microsoft YaHei"'>因此本笔记无法重建知识体系，只能如实记录转写中实际出现的一句话及其可用信息。</span>
+【二、逻辑链】
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>给定两个相同的整数</span><span
+style='font-family:Calibri'> $5$ → </span><span style='font-family:"Microsoft YaHei"'>按整数加法求和 </span><span
+style='font-family:Calibri'>→ </span><span style='font-family:"Microsoft YaHei"'>得到结果</span><span
+style='font-family:Calibri'> $10$</span><span style='font-family:"Microsoft YaHei"'>，即</span><span
+style='font-family:Calibri'> $5+5=10$</span><span style='font-family:"Microsoft YaHei"'>。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>此后没有出现任何新的前提、构造、推导或结论，逻辑链到此中断（转写在此处结束，无法判断是否原课还有后续内容）。</span>
+【三、知识点】
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>加法（</span><span
+style='font-family:Calibri'>addition</span><span style='font-family:"Microsoft YaHei"'>）：本次转写中唯一出现的内容是两个数相加并给出和，即</span><span
+style='font-family:Calibri'> $5+5=10$</span><span style='font-family:"Microsoft YaHei"'>。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>要点：转写中未说明适用数域、未使用变量、未给出运算律（交换律、结合律等）；这些均未出现，不可从本转写推断。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>等式（</span><span
+style='font-family:Calibri'>equality</span><span style='font-family:"Microsoft YaHei"'>）：转写用 </span><span
+style='font-family:Calibri'>“equals to” </span><span style='font-family:"Microsoft YaHei"'>表达</span><span
+style='font-family:Calibri'>“</span><span style='font-family:"Microsoft YaHei"'>等于</span><span
+style='font-family:Calibri'>”</span><span style='font-family:"Microsoft YaHei"'>。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>易错点：标准英文中动词</span><span
+style='font-family:Calibri'> equals </span><span style='font-family:"Microsoft YaHei"'>后不接</span><span
+style='font-family:Calibri'> to</span><span style='font-family:"Microsoft YaHei"'>（应为</span><span
+style='font-family:Calibri'> $5+5$ equals $10$ </span><span style='font-family:
+"Microsoft YaHei"'>或</span><span style='font-family:Calibri'> is equal to $10$</span><span
+style='font-family:"Microsoft YaHei"'>）。（转写存疑）</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>除此之外，本次转写不包含任何高数、线代、概率统计、离散数学或计算机专业课程的内容，故不列其他知识点。</span>
+【四、公式与代码速查】
+· $5+5=10$
+（本次转写未出现定理、算法伪代码或任何可整理的代码片段。）
+【五、术语对照表】
+<span
+style='font-family:"Microsoft YaHei"'>英文</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>中文</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>说明</span>
+<span
+style='font-family:Calibri'>plus  |  </span><span style='font-family:"Microsoft YaHei"'>加</span><span
+style='font-family:Calibri'>  |  </span><span style='font-family:"Microsoft YaHei"'>表示两数相加，如</span><span
+style='font-family:Calibri'> $5$ plus $5$</span>
+<span
+style='font-family:Calibri'>equals to / equals  |  </span><span
+style='font-family:"Microsoft YaHei"'>等于</span><span style='font-family:Calibri'>  |  </span><span
+style='font-family:"Microsoft YaHei"'>表示等式关系；标准用法为</span><span
+style='font-family:Calibri'> equals </span><span style='font-family:"Microsoft YaHei"'>后不加</span><span
+style='font-family:Calibri'> to</span><span style='font-family:"Microsoft YaHei"'>（转写存疑）</span>
+【六、待确认与作业线索】
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>转写完整性存疑：全课仅</span><span
+style='font-family:Calibri'> 1 </span><span style='font-family:"Microsoft YaHei"'>段、约</span><span
+style='font-family:Calibri'> 1 </span><span style='font-family:"Microsoft YaHei"'>分钟，且只有一句 </span><span
+style='font-family:Calibri'>“5 plus 5 equals to 10.”</span><span
+style='font-family:"Microsoft YaHei"'>，极可能是录音片段、转写丢失或课程尚未正式开始（如课前试音、板书口述）。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>无法推断课程主题：无法判断本次课属于哪门课程、哪一章节。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>无作业与考点线索：转写中未提到作业、练习、考试或</span><span
+style='font-family:Calibri'>“</span><span style='font-family:"Microsoft YaHei"'>下次讲</span><span
+style='font-family:Calibri'>”</span><span style='font-family:"Microsoft YaHei"'>的内容，也没有任何被教师留作练习的问题。</span>
+<span
+style='font-family:Calibri'>· </span><span style='font-family:"Microsoft YaHei"'>建议：请核对原始录音</span><span
+style='font-family:Calibri'>/</span><span style='font-family:"Microsoft YaHei"'>转写文件是否完整；若能提供完整转写，可据此重新整理结构化笔记。</span>

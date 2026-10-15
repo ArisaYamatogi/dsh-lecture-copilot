@@ -20,6 +20,7 @@
     "lib/prompts.js",
     "lib/onenote.js",
     "lib/note-xml.js",
+    "lib/latex-mathml.js",
     "lib/onenote-store.js",
     "host/onenote.ps1",
     "cordis.patch.yml",

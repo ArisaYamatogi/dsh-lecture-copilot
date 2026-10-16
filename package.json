@@ -1,8 +1,19 @@
 {
   "name": "dsh-lecture-copilot-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Lecture Copilot: live English lecture capture with real-time Chinese translation and an automatic logic-chain / knowledge-point review",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArisaYamatogi/dsh-lecture-copilot.git"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "lecture",
+    "translation",
+    "speech-to-text",
+    "onenote"
+  ],
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -12,6 +23,7 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "LICENSE",
     "lib/index.js",
     "lib/client.js",
     "lib/state.js",
@@ -29,8 +41,13 @@
     "Installation_en.md",
     "Installation_jp.md"
   ],
-  "license": "MIT",
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=22.19.0",
+    "dsh": ">=0.2.0-rc.2 <0.3.0"
+  },
   "dsh": {
+    "manifestVersion": 1,
     "bundle": {
       "patch": "./cordis.patch.yml"
     },
@@ -40,6 +57,23 @@
         "@deepseek-ai/dsh-client-ui-slots",
         "@deepseek-ai/dsh-client-locale"
       ]
+    },
+    "compatibility": {
+      "dsh": ">=0.2.0-rc.2 <0.3.0",
+      "dshReleases": {
+        "rc.7": "incompatible",
+        "rc.8": "incompatible",
+        "0.1.1-rc.1": "incompatible",
+        "0.1.1-rc.2": "incompatible",
+        "0.1.2-alpha.2": "incompatible",
+        "0.1.2-alpha.3": "incompatible",
+        "0.1.2-alpha.4": "incompatible",
+        "0.1.2-alpha.5": "incompatible",
+        "0.2.0-rc.2": "compatible",
+        "0.2.1-alpha.1": "unknown",
+        "0.2.1-alpha.2": "unknown",
+        "0.2.1-alpha.3": "unknown"
+      }
     }
   }
 }

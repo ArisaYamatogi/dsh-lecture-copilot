@@ -1,0 +1,11 @@
+﻿# 这个文件**刻意不进入版本库**（它是 .gitignore 本身，而 DSH STORE 的固定源
+# 扫描会把仓库根目录的 .gitignore / .gitattributes / .npmignore 判为"不支持的
+# 制品"，从而让扫描不完整并转人工审阅）。它只作为本机 git 的忽略规则存在。
+.idea/
+dsh-lecture-copilot-verify/
+*.bak
+*.orig
+
+# 本机复刻 DSH STORE 校验源码用的临时检出（不是插件的一部分）
+dsh-lecture-copilot-verify/.store-check2/
+dsh-lecture-copilot-verify/.store-check/

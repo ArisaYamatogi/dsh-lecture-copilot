@@ -23,20 +23,24 @@
 
 ### 分享/迁移到另一台机器
 
-插件是**自包含的一个目录**（12 个文件、没有依赖文件）
+插件是**自包含的一个目录**（没有依赖文件）
 复制目录 + 两处配置就是完整安装。
 
 要复制的目录：
 
 ```
 dsh-lecture-copilot/
-  package.json            包声明：dsh.bundle.patch + dsh.client
+  package.json            包声明：dsh.bundle.patch + dsh.client + engines + dsh.compatibility
   cordis.patch.yml        bundle 补丁：往 profile 根插入一行
+  LICENSE                 GPL-3.0 全文（与 package.json 的 license 一致）
   lib/  index.js client.js state.js notes.js tools.js prompts.js
-        onenote.js note-xml.js onenote-store.js
+        onenote.js note-xml.js onenote-store.js latex-mathml.js
   host/ onenote.ps1       OneNote COM 桥（仅 Windows 有用）
                          （但无论是否对你有用，也请务必复制）
 ```
+
+**不要**把 IDE 目录（`.idea/`）或本地验证目录（`dsh-lecture-copilot-verify/`）放进这个仓库：
+它们会让 DSH STORE 的固定源扫描判定为不完整（原因见 §5.6）。
 
 **在目标机器上：**
 
@@ -180,7 +184,107 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 
 ---
 
-## 5. 源码结构（适用于开发者）
+## 5. 兼容范围与权限声明（DSH STORE 上架契约）
+
+这一节是给商城审核与排障用的：manifest 里声明了什么，代码实际会碰什么，以及失败时会怎样。
+
+### 5.1 仓库与许可证
+
+| 项目 | 值 |
+|---|---|
+| canonical 仓库 | `https://github.com/ArisaYamatogi/dsh-lecture-copilot`（manifest 的 `repository` 与 GitHub 仓库一致） |
+| 许可证 | **GPL-3.0**：`package.json` 的 `license` 与仓库根 `LICENSE`（GNU GPL v3 全文）以及 GitHub 识别出的许可证一致；发布产物携带同一个 `LICENSE` |
+| 第三方代码 | 只有开发验证目录 `dsh-lecture-copilot-verify/vendor/` 内置了 React 18 的 UMD 构建（Facebook，MIT），仅用于离线渲染验证，不进入插件运行时，也不进入 `files` 清单 |
+
+### 5.2 兼容范围
+
+| 维度 | 声明 | 说明 |
+|---|---|---|
+| Node.js | `engines.node: ">=22.19.0"` | 与 DSH 桌面版自带运行时一致（随包 Node **24.18.1**，`libreoffice-kit` 要求 `>=22.19.0`）。`.github/workflows/node.js.yml` 的 CI 矩阵与之下限一致 |
+| DSH | `engines.dsh: ">=0.2.0-rc.2 <0.3.0"`，同时在 `dsh.compatibility.dsh` 里重复声明同一范围 | 范围与逐版本声明必须一致；有精确记录的版本以 `dshReleases` 为准 |
+| 逐版本记录 | `dsh.compatibility.dshReleases`：`0.2.0-rc.2 = compatible`（本机验证环境），`0.2.1-alpha.1/2/3 = unknown`（尚未验证），`0.1.x` 与 `rc.7/rc.8 = incompatible` | **范围命中不等于运行验收**：未经一次性 Profile 实测的版本一律记 `unknown`，不写成 `compatible` |
+| 插件形态 | Host 半 + 浏览器半（`dsh.client.platform: web`），Bundle 入口 ID `lecture-copilot` | 不加载、不禁用、不替换任何 `@deepseek-ai/*` 官方组件 |
+| 平台 | Windows 功能最完整；macOS/Linux 可录音、识别、翻译、生成笔记，**OneNote 导出不可用**（需要 Windows PowerShell + OneNote COM） | 因此 manifest 不声明 `os` 限制，避免把可用的非 Windows 场景一并挡掉 |
+
+> `engines.dsh` 与 `dsh.compatibility` 在本机 DSH 里都只是**声明**，不会被强制校验；真正会被 Profile 导入时强制检查的是
+> `peerDependencies`，本插件刻意不声明它——版本不在范围内时应当正常加载并在商城显示"待验证"，而不是让插件从 Profile 里消失。
+
+### 5.3 权限声明（按固定 Commit 源码保守填写）
+
+| 访问类型 | 实际能力 | 具体位置 |
+|---|---|---|
+| 文件 | **write**（仅插件自己的状态文件） | `lib/onenote-store.js` 在 `$DSH_HOME/storages/lecture-copilot/onenote-destinations.json` 读写"用过的笔记本/分区/页面"；不触碰 Profile、会话目录或其他 storages |
+| 网络 | specified-services：**仅同源 loopback** | `lib/client.js` 以 `credentials: 'same-origin'` 请求 Harness 本地路由（`http://127.0.0.1:<port>/lecture-copilot/*`）；**不访问任何外部地址**，没有遥测与上报 |
+| 命令 | restricted | `lib/onenote.js` 用固定参数数组 `spawn` 本机 PowerShell 执行 `host/onenote.ps1`（`-NoProfile -NonInteractive -ExecutionPolicy Bypass -File <script>`，无 shell 字符串拼接），驱动 OneNote 的 COM 自动化；该子进程只在用户点击"导出 OneNote"时才启动 |
+| 凭据 | **none**（不读取、不存储、不转发） | `lib/notes.js` 的模型调用走 Harness 的 `llm` 服务，由宿主管模型路由与凭据；插件自身不读环境里的密钥、token 或系统钥匙串 |
+| 汇总等级 | **high** | 触及插件私有持久状态、会启动本机子进程；均在本节逐项披露 |
+
+### 5.4 外部依赖与外部服务
+
+| 依赖 | 用途 | 缺失时的行为 |
+|---|---|---|
+| Node.js ≥ 22.19.0 | 宿主运行时（DSH 自带） | — |
+| Windows PowerShell（`pwsh.exe` 或 `powershell.exe`）+ 桌面版 OneNote | 仅"导出 OneNote" | 按钮不可用，面板显示"OneNote is not available on this machine"，其余功能不受影响 |
+| 模型服务（DeepSeek 等，经 Harness 的 `llm`） | 翻译与生成复习笔记 | 转写仍可用，翻译/笔记给出失败原因 |
+| 本机语音识别（Harness 的 `speechToText` / SenseVoice） | 英文转写 | 面板提示识别失败，不产出错误文本 |
+| GitHub | 仅发布与上架验证时使用 | 与插件运行无关 |
+
+### 5.5 失败边界
+
+- **配置**：数值型字段低于下限时抬到下限，非数字退回默认，未知字段被拒绝；一行配置写错只会损失调参，不会让整行加载失败。
+- **翻译 / 笔记**：单段翻译有 `translationTimeoutMs`（默认 60s）与 `translationMaxTokens`；整堂笔记有 `reviewTimeoutMs`（默认 300s）与 `reviewMaxTokens`；课堂段数上限 `maxSegments`（默认 2000）。
+- **导出**：OneNote 桥调用 60s 超时，超时杀子进程并返回可读原因。
+- **写入**：导出流程是"只增不减"——先读页面、再追加一个 `one:Outline` 写回，从不删页、删元素或覆盖整页；找不到笔记本/分区/页面时直接拒绝并说明，不做猜测替代。
+- **网络**：只使用同源 loopback，失败即报错，没有外部重试与回退上报。
+- **记忆的导出目的地**：只是提示，不是权威；每次展示与实际写入前都会重新对照实时笔记本树，已改名/已关闭的项会被丢弃。
+
+### 5.6 仓库扫描面卫生（很重要）
+
+DSH STORE 的固定源扫描会走**完整仓库树**（不是 `files` 白名单），只要树里出现不是
+源码、不是静态资源、也不是元数据的文件，扫描就被判定为"不完整"，项目会被推回人工审阅——
+即使插件本身没问题。已实测踩过的两个坑：
+
+| 坑 | 后果 | 现状 |
+|---|---|---|
+| 把本地验证目录 `dsh-lecture-copilot-verify/` 提交进插件仓库 | 验证脚本自己的文件/网络/命令信号会被算进插件能力面，还会被判为"本地模块不在分发面内" | 已从版本库移除（验证套件留在插件仓库的**兄弟目录**） |
+| 仓库根目录的 `.gitattributes` / `.gitignore` | 它们自身不是可扫描源码，会被列为"不支持的制品"，扫描直接不完整 | 已删除；`.gitignore` 只作为**本机**忽略规则存在，刻意不提交 |
+
+清理前后（用 Store 的真实 `reviewFixedSource` 对本地树跑）：
+
+```
+清理前：scanComplete=false，能力证据 30 条（含 verify/ 与 vendor/ 的开发工具）
+清理后：scanComplete=true， 能力证据  6 条，全部在 lib/ 与真实功能一一对应
+```
+
+**因此：不要往这个仓库里提交 IDE 目录、验证脚本、备份文件或本地截图。**
+
+### 5.7 本仓库的上架自检
+
+```powershell
+node ../dsh-lecture-copilot-verify/store-contract-check.mjs
+```
+
+它按 DSH STORE 固定源自动策略的同一组判定，逐条检查本仓库 manifest 的
+`repository` / `license` / `files` / `engines.dsh` / `engines.node` / `dsh.compatibility`，
+并确认声明与仓库身份、许可证文件、CI 矩阵、仓库扫描面一致——这样这几项不会再悄悄漂移回不合规的状态。
+
+### 5.8 哪些原因不是"改 manifest 能解决"的
+
+即使上面全部通过，这个插件仍然带着 4 个能力信号：
+
+```
+runtime source contains the files / network / commands / credentials permission signal
+```
+
+它们来自真实功能（本地状态文件、同源 loopback 上传、PowerShell 子进程、`DSH_HOME` 环境读取），
+在 `registry/automation-policy.json` 里被设成"不允许自动通过"。这类项目按契约走的是
+**人工审阅通道**（`user-reviewed`），而不是自动 `source-verified`：审阅记录会逐条绑定
+`规则 + 文件 + 行号 + 源码 SHA256`。插件能做的就是像 §5.3 这样把每一项能力写清楚、
+把扫描面收干净，让审阅一次过。
+
+---
+
+## 6. 源码结构（适用于开发者）
 
 | 文件 | 职责 |
 |---|---|
@@ -211,3 +315,4 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 | `../dsh-lecture-copilot-verify/real-react-probe.mjs` | 真实 React 18 渲染面板并点击候选（20 项检查，`vendor/` 内置 React） |
 | `../dsh-lecture-copilot-verify/requirement-audit.mjs` | 逐条需求对照实现（40 项检查） |
 | `../dsh-lecture-copilot-verify/sync-state-block.mjs` | 把 `state.js` 的状态块同步进 `client.js`（改完状态一定要跑） |
+| `../dsh-lecture-copilot-verify/store-contract-check.mjs` | DSH STORE 上架契约自检（repository / license / files / engines / dsh.compatibility） |

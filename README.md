@@ -184,16 +184,14 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 
 ---
 
-## 5. 兼容范围与权限声明（DSH STORE 上架契约）
-
-这一节是给商城审核与排障用的：manifest 里声明了什么，代码实际会碰什么，以及失败时会怎样。
+## 5. 兼容范围与权限声明
 
 ### 5.1 仓库与许可证
 
 | 项目 | 值 |
 |---|---|
-| canonical 仓库 | `https://github.com/ArisaYamatogi/dsh-lecture-copilot`（manifest 的 `repository` 与 GitHub 仓库一致） |
-| 许可证 | **GPL-3.0**：`package.json` 的 `license` 与仓库根 `LICENSE`（GNU GPL v3 全文）以及 GitHub 识别出的许可证一致；发布产物携带同一个 `LICENSE` |
+| canonical 仓库 | `https://github.com/ArisaYamatogi/dsh-lecture-copilot`|
+| 许可证 | **GPL-3.0** |
 | 第三方代码 | 只有开发验证目录 `dsh-lecture-copilot-verify/vendor/` 内置了 React 18 的 UMD 构建（Facebook，MIT），仅用于离线渲染验证，不进入插件运行时，也不进入 `files` 清单 |
 
 ### 5.2 兼容范围
@@ -204,10 +202,7 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 | DSH | `engines.dsh: ">=0.2.0-rc.2 <0.3.0"`，同时在 `dsh.compatibility.dsh` 里重复声明同一范围 | 范围与逐版本声明必须一致；有精确记录的版本以 `dshReleases` 为准 |
 | 逐版本记录 | `dsh.compatibility.dshReleases`：`0.2.0-rc.2 = compatible`（本机验证环境），`0.2.1-alpha.1/2/3 = unknown`（尚未验证），`0.1.x` 与 `rc.7/rc.8 = incompatible` | **范围命中不等于运行验收**：未经一次性 Profile 实测的版本一律记 `unknown`，不写成 `compatible` |
 | 插件形态 | Host 半 + 浏览器半（`dsh.client.platform: web`），Bundle 入口 ID `lecture-copilot` | 不加载、不禁用、不替换任何 `@deepseek-ai/*` 官方组件 |
-| 平台 | Windows 功能最完整；macOS/Linux 可录音、识别、翻译、生成笔记，**OneNote 导出不可用**（需要 Windows PowerShell + OneNote COM） | 因此 manifest 不声明 `os` 限制，避免把可用的非 Windows 场景一并挡掉 |
-
-> `engines.dsh` 与 `dsh.compatibility` 在本机 DSH 里都只是**声明**，不会被强制校验；真正会被 Profile 导入时强制检查的是
-> `peerDependencies`，本插件刻意不声明它——版本不在范围内时应当正常加载并在商城显示"待验证"，而不是让插件从 Profile 里消失。
+| 平台 | Windows (功能完整)；macOS/Linux 可录音、识别、翻译、生成笔记，**OneNote 导出不可用** | / |
 
 ### 5.3 权限声明（按固定 Commit 源码保守填写）
 
@@ -238,7 +233,7 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 - **网络**：只使用同源 loopback，失败即报错，没有外部重试与回退上报。
 - **记忆的导出目的地**：只是提示，不是权威；每次展示与实际写入前都会重新对照实时笔记本树，已改名/已关闭的项会被丢弃。
 
-### 5.6 仓库扫描面卫生（很重要）
+### 5.6 仓库扫描面卫生
 
 DSH STORE 的固定源扫描会走**完整仓库树**（不是 `files` 白名单），只要树里出现不是
 源码、不是静态资源、也不是元数据的文件，扫描就被判定为"不完整"，项目会被推回人工审阅——
@@ -264,23 +259,9 @@ DSH STORE 的固定源扫描会走**完整仓库树**（不是 `files` 白名单
 node ../dsh-lecture-copilot-verify/store-contract-check.mjs
 ```
 
-它按 DSH STORE 固定源自动策略的同一组判定，逐条检查本仓库 manifest 的
+按 DSH STORE 固定源自动策略的同一组判定，逐条检查本仓库 manifest
 `repository` / `license` / `files` / `engines.dsh` / `engines.node` / `dsh.compatibility`，
-并确认声明与仓库身份、许可证文件、CI 矩阵、仓库扫描面一致——这样这几项不会再悄悄漂移回不合规的状态。
-
-### 5.8 哪些原因不是"改 manifest 能解决"的
-
-即使上面全部通过，这个插件仍然带着 4 个能力信号：
-
-```
-runtime source contains the files / network / commands / credentials permission signal
-```
-
-它们来自真实功能（本地状态文件、同源 loopback 上传、PowerShell 子进程、`DSH_HOME` 环境读取），
-在 `registry/automation-policy.json` 里被设成"不允许自动通过"。这类项目按契约走的是
-**人工审阅通道**（`user-reviewed`），而不是自动 `source-verified`：审阅记录会逐条绑定
-`规则 + 文件 + 行号 + 源码 SHA256`。插件能做的就是像 §5.3 这样把每一项能力写清楚、
-把扫描面收干净，让审阅一次过。
+并确认声明与仓库身份、许可证文件、CI 矩阵、仓库扫描面一致
 
 ---
 

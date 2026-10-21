@@ -28,6 +28,7 @@
     "lib/client.js",
     "lib/state.js",
     "lib/notes.js",
+    "lib/asr.js",
     "lib/tools.js",
     "lib/prompts.js",
     "lib/onenote.js",

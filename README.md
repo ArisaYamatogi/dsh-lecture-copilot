@@ -33,7 +33,7 @@ dsh-lecture-copilot/
   package.json            包声明：dsh.bundle.patch + dsh.client + engines + dsh.compatibility
   cordis.patch.yml        bundle 补丁：往 profile 根插入一行
   LICENSE                 GPL-3.0 全文（与 package.json 的 license 一致）
-  lib/  index.js client.js state.js notes.js tools.js prompts.js
+  lib/  index.js client.js state.js notes.js asr.js tools.js prompts.js
         onenote.js note-xml.js onenote-store.js latex-mathml.js
   host/ onenote.ps1       OneNote COM 桥（仅 Windows 有用）
                          （但无论是否对你有用，也请务必复制）
@@ -178,18 +178,20 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
     provider: deepseek-official   # 通用兜底路由
     model: deepseek-flash
     reasoningEffort: max
-    # 识别：除本机 SenseVoice 外，再登记本地 HTTP ASR 引擎（OpenAI 兼容）
+    # 识别：除本机 SenseVoice 外，再登记 HTTP ASR 引擎（OpenAI 兼容）
     asrEngine: harness            # 只写默认引擎；'harness' = Harness speechToText
     asrProviders:
       - id: whisper-npu
         label: Whisper Large V3 Turbo (NPU)
         baseURL: http://127.0.0.1:8022/v1
         model: whisper-large-v3-turbo-int8-ov
-      - id: qwen-asr
-        label: Qwen3 ASR (GPU)
-        baseURL: http://127.0.0.1:8020/v1
-        model: qwen3-asr
-        languages: [auto, en, zh]   # 可选：若不写则用内置语言表
+      # 云端 ASR 需要密钥时，二选一（见下表）：
+      - id: openai-whisper
+        label: OpenAI Whisper（云端）
+        baseURL: https://api.openai.com/v1
+        model: whisper-1
+        apiKey: sk-...                 # 直接写在配置里（明文，注意文件权限）
+        # apiKeyEnv: OPENAI_API_KEY    # 或只写变量名，密钥留在环境变量里（更安全）
     # 翻译/笔记：各自的路由（不写则跟随上面的通用路由）
     translationProvider: deepseek-official
     translationModel: deepseek-flash
@@ -202,7 +204,10 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 | 字段 | 默认 | 说明 |
 |---|---|---|
 | `asrEngine` | `''`（= `harness`） | 默认识别引擎 id；`harness`（或 `speechToText`）表示用 Harness 自带的 `speechToText` |
-| `asrProviders` | `[]` | 额外识别引擎列表，每个是一个 OpenAI 兼容 `/audio/transcriptions` 服务：`id`/`baseURL`/`model` 必填，`label`、`apiKeyEnv`、`languages` 可选 |
+| `asrProviders` | `[]` | 额外识别引擎列表，每个是一个 OpenAI 兼容 `/audio/transcriptions` 服务：`id`/`baseURL`/`model` 必填，`label`、`apiKey`、`apiKeyEnv`、`languages` 可选 |
+| ↳ `apiKey` | — | **直接写进配置的密钥**。只作为 `Authorization: Bearer …` 发给该引擎自己的 `baseURL`，不写入日志、不回传面板、不发给任何其他地址 |
+| ↳ `apiKeyEnv` | — | 环境变量名（如 `OPENAI_API_KEY`）；`apiKey` 未填时才会读它 |
+| ↳ `languages` | 内置表 | 该引擎接受的语言；不写就用内置语言表（auto/en/zh/yue/ja/ko） |
 | `provider` / `model` | 跟随组合默认模型 | 翻译与笔记的**通用兜底**路由 |
 | `reasoningEffort` | 跟随默认模型 | 通用推理强度兜底 |
 | `translationProvider` / `translationModel` / `translationReasoningEffort` | 跟随通用路由 | 实时翻译这一路的路由 |
@@ -215,6 +220,17 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 | `translationTemperature` | 0 | 翻译采样温度 |
 | `translationTimeoutMs` / `translationMaxTokens` | 60000 / 4096 | 单段翻译预算（同时用作单次识别的超时上限） |
 | `reviewTimeoutMs` / `reviewMaxTokens` | 300000 / 32000 | 整堂笔记预算 |
+
+**密钥的优先级**：同一个引擎里 `apiKey` 与 `apiKeyEnv` 都写时，**`apiKey` 优先**；只写 `apiKeyEnv` 且变量为空/未设置时，
+这次识别会在面板上报“环境变量 XXX 未设置或为空”。
+
+**密钥安全**：`apiKey` 是明文写在 profile 的 `cordis.patch.yml` 里的（这也是它能"填进配置文件"的原因）。注意：
+
+- 不要把带真实密钥的 profile 提交到 Git 或分享给别人；
+- 多机/共享环境优先用 `apiKeyEnv`，密钥只留在环境变量里；
+- 插件本身不打印、不回传、不记录密钥：`/models` 与 `/health` 只返回“是否已配置”（`auth: config|env|none`），
+  面板只在识别行显示一句“已使用配置文件里的 API 密钥 / 已从环境变量读取 API 密钥 / 未配置 API 密钥”；
+- 密钥只会发给**该引擎条目的 `baseURL`**，不会发给翻译模型、其他引擎或任何别处。
 
 识别引擎的失败边界：地址连不上、返回非 2xx、返回的不是 JSON、或返回空文本，都会在面板上给出**带引擎名**的原因，
 不会假装“老师这段没说话”。
@@ -251,7 +267,7 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 | 文件 | **write**（仅插件自己的状态文件） | `lib/onenote-store.js` 在 `$DSH_HOME/storages/lecture-copilot/onenote-destinations.json` 读写"用过的笔记本/分区/页面"；不触碰 Profile、会话目录或其他 storages |
 | 网络 | specified-services：同源 loopback + **仅** profile 登记过的 ASR 地址 | `lib/client.js` 以 `credentials: 'same-origin'` 请求 Harness 本地路由（`http://127.0.0.1:<port>/lecture-copilot/*`）；配置了 `asrProviders` 时，Host 半只向**这些登记的 baseURL** 发 `POST /audio/transcriptions`（默认不配置，即完全不发）；**不访问任何其他地址**，没有遥测与上报 |
 | 命令 | restricted | `lib/onenote.js` 用固定参数数组 `spawn` 本机 PowerShell 执行 `host/onenote.ps1`（`-NoProfile -NonInteractive -ExecutionPolicy Bypass -File <script>`，无 shell 字符串拼接），驱动 OneNote 的 COM 自动化；该子进程只在用户点击"导出 OneNote"时才启动 |
-| 凭据 | **none**（不读取、不存储、不转发） | `lib/notes.js` 的模型调用走 Harness 的 `llm` 服务，由宿主管模型路由与凭据；插件自身不读环境里的密钥、token 或系统钥匙串 |
+| 凭据 | **none / 可选**（仅在 `asrProviders[].apiKey` 或 `apiKeyEnv` 配置时使用） | 翻译与笔记走 Harness 的 `llm` 服务，凭据由宿主管理；识别引擎的密钥只由 `lib/asr.js` 解析并作为 `Authorization: Bearer` 发给**该引擎自己的 baseURL**。密钥不写入日志、不回传面板（面板只看到 `auth: config/env/none`）、不读系统钥匙串、不转发给其他地址 |
 | 汇总等级 | **high** | 触及插件私有持久状态、会启动本机子进程；均在本节逐项披露 |
 
 ### 5.4 外部依赖与外部服务
@@ -262,7 +278,7 @@ Ans: 技术上不可行，macOS 上 OneNote 是沙盒应用，没有 COM，也�
 | Windows PowerShell（`pwsh.exe` 或 `powershell.exe`）+ 桌面版 OneNote | 仅"导出 OneNote" | 按钮不可用，面板显示"OneNote is not available on this machine"，其余功能不受影响 |
 | 模型服务（DeepSeek 等，经 Harness 的 `llm`） | 翻译与生成复习笔记 | 转写仍可用，翻译/笔记给出失败原因 |
 | 本机语音识别（Harness 的 `speechToText` / SenseVoice） | 默认的英文转写 | 面板提示识别失败，不产出错误文本 |
-| 可选的本地 ASR 服务（如 Whisper / Qwen3-ASR，OpenAI 兼容 `/audio/transcriptions`） | 由 `asrProviders` 登记后作为识别引擎 | 该引擎不可用时面板报“识别引擎 X 连接失败/返回 HTTP …”，可切回本机识别；不影响翻译与笔记 |
+| 可选的本地/云端 ASR 服务（如 Whisper / Qwen3-ASR / OpenAI Whisper，OpenAI 兼容 `/audio/transcriptions`） | 由 `asrProviders` 登记后作为识别引擎；云端服务需要 `apiKey` 或 `apiKeyEnv` | 该引擎不可用时面板报“识别引擎 X 连接失败/返回 HTTP …”，密钥被拒时补充“API 密钥被拒绝/未配置”的提示；可切回本机识别，不影响翻译与笔记 |
 | GitHub | 仅发布与上架验证时使用 | 与插件运行无关 |
 
 ### 5.5 失败边界
@@ -315,6 +331,7 @@ node ../dsh-lecture-copilot-verify/store-contract-check.mjs
 | `lib/index.js` | Host 半：配置校验、`Config`（standard-schema）、`lectureCopilot` 会话服务、7 个 HTTP 路由、模块装配 |
 | `lib/prompts.js` | 两条提示词（同传翻译 / 复习笔记）与转写渲染 |
 | `lib/notes.js` | 模型调用：解析模型路由、流式取全文、翻译与笔记封装、失败原因回传 |
+| `lib/asr.js` | 识别传输：OpenAI 兼容 `/audio/transcriptions` 请求、`apiKey`/`apiKeyEnv` 解析与 Bearer 头；密钥只在这一层出现，且只发给该引擎地址 |
 | `lib/tools.js` | 两个面向模型的工具：`lecture_transcript`、`lecture_review` |
 | `lib/client.js` | 浏览器半：悬浮按钮与双语面板、麦克风采集、VAD 分段、WAV 编码、同源上传、导出对话框 |
 | `lib/state.js` | 面板状态（可执行测试的那一份；client.js 内联同一块，脚本逐字符比对） |
@@ -325,8 +342,8 @@ node ../dsh-lecture-copilot-verify/store-contract-check.mjs
 | `Installation_zh-CN.md` | 给新机器用的安装手册（中文） |
 | `Installation_en.md` | 给新机器用的安装手册（English） |
 | `Installation_jp.md` | 给新机器用的安装手册（日本語） |
-| `../dsh-lecture-copilot-verify/verify.mjs` | 离线端到端行为验证（173 项检查） |
-| `../dsh-lecture-copilot-verify/render-panel.mjs` | 面板渲染验证（61 项检查） |
+| `../dsh-lecture-copilot-verify/verify.mjs` | 离线端到端行为验证（252 项检查） |
+| `../dsh-lecture-copilot-verify/render-panel.mjs` | 面板渲染验证（87 项检查） |
 | `../dsh-lecture-copilot-verify/cold-boot-check.mjs` | 冷启动就绪度检查（解析 / inject / Config schema / 客户端模块 id） |
 | `../dsh-lecture-copilot-verify/live-e2e.ps1` | 在线端到端自检（真实音频） |
 | `../dsh-lecture-copilot-verify/onenote-probe.mjs` | 对真实 OneNote 的读写验证（默认只读；`--append` 才写入） |
@@ -334,7 +351,7 @@ node ../dsh-lecture-copilot-verify/store-contract-check.mjs
 | `../dsh-lecture-copilot-verify/bundle-resolve-check.mjs` | 重启路径检查：profile 是否解析到**当前**的客户端文件（15 项检查） |
 | `../dsh-lecture-copilot-verify/css-layout-probe.mjs` | 真实浏览器（Edge headless）里的布局与滚动验证（12 项检查） |
 | `../dsh-lecture-copilot-verify/client-bundle-probe.mjs` | 真实浏览器加载并运行发布的客户端 bundle（10 项检查） |
-| `../dsh-lecture-copilot-verify/real-react-probe.mjs` | 真实 React 18 渲染面板并点击候选（20 项检查，`vendor/` 内置 React） |
-| `../dsh-lecture-copilot-verify/requirement-audit.mjs` | 逐条需求对照实现（40 项检查） |
+| `../dsh-lecture-copilot-verify/real-react-probe.mjs` | 真实 React 18 渲染面板并点击候选（21 项检查，`vendor/` 内置 React） |
+| `../dsh-lecture-copilot-verify/requirement-audit.mjs` | 逐条需求对照实现（43 项检查） |
 | `../dsh-lecture-copilot-verify/sync-state-block.mjs` | 把 `state.js` 的状态块同步进 `client.js`（改完状态一定要跑） |
 | `../dsh-lecture-copilot-verify/store-contract-check.mjs` | DSH STORE 上架契约自检（repository / license / files / engines / dsh.compatibility） |
